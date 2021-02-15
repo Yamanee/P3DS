@@ -1,0 +1,22 @@
+/*=========================================================================
+
+  Library:   Peds
+  File:      Configuration.h
+
+=========================================================================*/
+
+#ifndef PEDS_CONFIGURATION_H
+#define PEDS_CONFIGURATION_H
+
+/**
+ * Configuration file processed by cmake.
+ * Fetch library version and other usefull properties
+ * of the project.
+ */
+
+#define PEDS_VERSION_MAJOR @PROJECT_VERSION_MAJOR@
+#define PEDS_VERSION_MINOR @PROJECT_VERSION_MINOR@
+#define PEDS_VERSION_PATCH @PROJECT_VERSION_PATCH@
+#define PEDS_VERSION "@PROJECT_VERSION@"
+
+#endif // PEDS_CONFIGURATION_H
