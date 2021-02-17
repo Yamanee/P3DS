@@ -8,26 +8,19 @@
 #ifndef PEDS_DETAILS_H
 #define PEDS_DETAILS_H
 
-namespace peds
-{
+namespace peds {
 
 /**
  * @class   Details
  * @brief   Details dummy class that should not be visible outside the library
  */
-class Details
-{
+class Details {
 public:
-
   Details() = default;
 
   ~Details() = default;
 
   static void hello();
-
-private:
-
-  int Variable;
 };
 
 } // namespace peds

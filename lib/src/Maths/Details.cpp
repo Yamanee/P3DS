@@ -9,8 +9,7 @@
 
 #include <iostream>
 
-namespace peds
-{
+namespace peds {
 
 void Details::hello()
 {

@@ -1,0 +1,87 @@
+name: Build Analyze and Test
+
+on: [push, pull_request]
+
+jobs:
+  job1:
+    name: ${{ matrix.config.name }}
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+        # Ignore Windows because of a weird linkage error with GTest, and I don't want to bother with it RN
+        # - {
+        #     name: "Windows Server 2019", artifact: "Windows-MSVC.tar.xz",
+        #     os: windows-2019,
+        #     build_type: "Release", cc: "cl", cxx: "cl",
+        #     environment_script: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
+        #   }
+        - {
+            name: "Ubuntu 20.O4 GCC", artifact: "Linux.tar.xz",
+            os: ubuntu-20.04,
+            build_type: "Release", cc: "gcc", cxx: "g++"
+          }
+        - {
+            name: "macOS Catalina Clang", artifact: "macOS.tar.xz",
+            os: macos-10.15,
+            build_type: "Release", cc: "clang", cxx: "clang++"
+          }
+
+    steps:
+    - uses: actions/checkout@v2
+    
+    # - uses: ilammy/msvc-dev-cmd@v1
+
+    - uses: lukka/set-shell-env@v1
+      name: Set Compiler Environment
+      with:
+        CXX: ${{ matrix.config.cxx }}
+        CC: ${{ matrix.config.cc }}
+
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v1
+      with:
+        languages: 'cpp'
+
+    - name: CMake Configure
+      working-directory: '${{ github.workspace }}'
+      shell: bash
+      run: 'cmake -S . -B build -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} -DBUILD_P3DS_VIEWER=OFF -DBUILD_DOCUMENTATION=OFF -DBUILD_TESTING=ON'
+
+    - name: Build
+      working-directory: '${{ github.workspace }}'
+      shell: bash
+      run: cmake --build build
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v1
+
+    - name: Testing
+      working-directory: '${{ github.workspace }}'
+      shell: bash
+      run: ./build/tests/TestP3DS
+
+    - uses: actions/upload-artifact@v2
+      name: Upload Build Artifact
+      with:
+        name: 'Build-Dir-${{ matrix.config.name }}'
+        path: |
+          build/
+          !build/_deps/
+
+    - name: Install Strip
+      working-directory: '${{ github.workspace }}'
+      shell: bash
+      run: cmake --install build --prefix install --strip
+
+    - name: Pack Install
+      working-directory: install
+      shell: bash
+      run: cmake -E tar cfv ../${{ matrix.config.artifact }} --format=7zip .
+
+    - name: Upload Install Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        path: ./${{ matrix.config.artifact }}
+        name: ${{ matrix.config.artifact }}
