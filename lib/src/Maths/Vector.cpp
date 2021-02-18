@@ -5,14 +5,14 @@
 
 =========================================================================*/
 
-#include "Details.h"
 #include "Maths/Vector.h"
+#include "Details.h"
 
-namespace peds
-{
+namespace peds {
 
 void Vector::hello()
 {
+  this->Variable++;
   Details::hello();
 }
 

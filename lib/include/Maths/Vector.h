@@ -10,17 +10,14 @@
 
 #include "peds_export.h"
 
-namespace peds
-{
+namespace peds {
 
 /**
  * @class   Vector
  * @brief   Vector dummy class
  */
-class PEDS_EXPORT Vector
-{
+class PEDS_EXPORT Vector {
 public:
-
   /**
    * Default constructor
    */
@@ -37,11 +34,10 @@ public:
   void hello();
 
 private:
-
   /**
    * Dummy :)
    */
-  int Variable;
+  int Variable = 0;
 };
 
 } // namespace peds

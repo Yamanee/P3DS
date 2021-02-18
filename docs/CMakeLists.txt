@@ -1,7 +1,6 @@
 find_package(Doxygen REQUIRED dot OPTIONAL_COMPONENTS mscgen dia)
 set(DOXYGEN_HAVE_DOT true)
 
-
 # -----------------------------------------------------------------------------
 # Add library documentation
 file(GLOB_RECURSE LIBPEDS_FILES
@@ -10,6 +9,10 @@ file(GLOB_RECURSE LIBPEDS_FILES
   "${CMAKE_CURRENT_SOURCE_DIR}/../lib/*.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/../lib/*.cpp"
 )
+
+# Add a main page
+list(APPEND LIBPEDS_FILES "${CMAKE_CURRENT_SOURCE_DIR}/MainPage.md")
+set(DOXYGEN_USE_MDFILE_AS_MAINPAGE "${CMAKE_CURRENT_SOURCE_DIR}/MainPage.md")
 
 set(DOXYGEN_WARN_IF_UNDOCUMENTED "NO")
 set(DOXYGEN_QUIET "YES")
