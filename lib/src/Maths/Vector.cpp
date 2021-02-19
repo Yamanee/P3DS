@@ -10,10 +10,15 @@
 
 namespace peds {
 
-void Vector::hello()
+void Vector::Hello()
 {
   this->Variable++;
-  Details::hello();
+  Details::Hello();
+}
+
+void Vector::UnusedFunction()
+{
+  this->Variable += 2;
 }
 
 }

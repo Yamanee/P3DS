@@ -31,7 +31,9 @@ public:
   /**
    * Hello World function :)
    */
-  void hello();
+  void Hello();
+
+  void UnusedFunction();
 
 private:
   /**

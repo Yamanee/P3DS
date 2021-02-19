@@ -25,11 +25,11 @@ jobs:
       osx_image: xcode12
 
 # -----------------------------------------------------------------------------
-# Actual job
+# Actual job (coverage will work only for linux)
 script:
   - if [ $TRAVIS_OS_NAME == 'linux' ]; then export NUMBER_OF_PROCESSORS=$(nproc --all) && echo $NUMBER_OF_PROCESSORS; fi
   - cmake --version
-  - cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_P3DS_VIEWER=OFF -DBUILD_DOCUMENTATION=OFF -DBUILD_TESTING=ON
+  - cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_P3DS_VIEWER=OFF -DBUILD_DOCUMENTATION=OFF -DBUILD_TESTING=ON -DENABLE_COVERAGE=ON
   - |
     if [ $TRAVIS_OS_NAME == 'linux' ]; then
       build-wrapper-linux-x86-64 --out-dir bw-output cmake --build build
@@ -39,6 +39,10 @@ script:
   - build/tests/TestP3DS
   - |
     if [ $TRAVIS_OS_NAME == 'linux' ]; then
+      cd build
+      mkdir _coverage && cd _coverage
+      find ../lib/CMakeFiles/Peds.dir/src/ -name "*.gcda" -exec gcov {} \;
+      cd ../..
       sonar-scanner -Dsonar.cfamily.build-wrapper-output=bw-output -Dsonar.cfamily.cache.enabled=true -Dsonar.cfamily.cache.path=${TRAVIS_HOME}/.cfamily -Dsonar.cfamily.threads=${NUMBER_OF_PROCESSORS}
     fi
 

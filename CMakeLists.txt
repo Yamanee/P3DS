@@ -6,9 +6,16 @@ project(Peds
   LANGUAGES CXX)
 
 if(MSVC)
-  add_compile_options(/W3 /WX)
+  add_compile_options(/W3)
 else()
-  add_compile_options(-W -Wall -Werror -Wpedantic)
+  add_compile_options(-W -Wall -Wpedantic -Wshadow -Wunused-variable -Wunused-parameter)
+endif()
+
+option(ENABLE_COVERAGE "Enable coverage" OFF)
+mark_as_advanced(ENABLE_COVERAGE)
+if(ENABLE_COVERAGE AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  add_compile_options(-g -O0 -fprofile-arcs -ftest-coverage)
+  add_link_options(-fprofile-arcs -ftest-coverage)
 endif()
 
 # P3DS library
