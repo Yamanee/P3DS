@@ -1,0 +1,53 @@
+# -----------------------------------------------------------------------------
+language: cpp
+
+# -----------------------------------------------------------------------------
+# Build config
+
+# Only trigger build for PR (enabled on Travis website) and any push to the main branch
+branches:
+  only:
+    - main
+
+# SonarCloud support
+addons:
+  sonarcloud:
+    organization: "yamanee-github"
+    token:
+      secure: "LMipEOiXWszNNtluTodgFPgR8h8rJDUvvfeVV0bffS46IwCvbZmtoEY0ONTB9h552qpOPesVOTtqeq7v1GZj/tJG4hrDWReXdGOe+HauMPEZJJWU2jBxxkYIxGSi6g0TmpuZJIuWKIfvybbDkh+2DGAq3CR5epR9JyphCJXhWtNt9FYX7X/LRWbOj1RKJadwnJKgcv3ERaoZTvek5xHcENO/7ffmRAfQVxQMog/0YtZ6G4NfmvRDgtYGpZBw97gk5CJEWKcUCzf/m07/wwA/Z2WHl+VfWKLHe6iGivXYn/BYvwlCFUT64Mf+/WLdqZJgHB9Xd+TDKBMUKTCKmjlQ9sbzs6BWOyewqQ97IkUsFQpIxlBlMdlH9PgJQi0cM4s9vKgpz8RGd3sQ1Nv3gKs5L2Ja5inUZ8xNu6rLxgeAdtDcD24SPduo7WPbuAPqaB51a+MyeaU6D3U74dNPOzavANmW4PMSxzVUP79hIg8S6T+WBmIOj55dxVWxUgVXvNewZZjSQ+VJ327NLoKAel7BG8CUskvQUuTd/ISf4G8AldrEtSlWowC8vQF/RX8F4xDFlzeNp3DOQPlZm4zp/r6cXTSNZUUum9WjiMIdJ7mCYCPf8RIaK8IufBRu/LaJKgEOBNQAWv8dms48ey6fplQBDdABo3WHxhhmmmCCvyMMRn8="
+
+# OS's matrix
+jobs:
+  include:
+    - os: linux
+      dist: focal
+    - os: osx
+      osx_image: xcode12
+
+# -----------------------------------------------------------------------------
+# Actual job
+script:
+  - if [ $TRAVIS_OS_NAME == 'linux' ]; then export NUMBER_OF_PROCESSORS=$(nproc --all) && echo $NUMBER_OF_PROCESSORS; fi
+  - cmake --version
+  - cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_P3DS_VIEWER=OFF -DBUILD_DOCUMENTATION=OFF -DBUILD_TESTING=ON
+  - |
+    if [ $TRAVIS_OS_NAME == 'linux' ]; then
+      build-wrapper-linux-x86-64 --out-dir bw-output cmake --build build
+    else
+      cmake --build build
+    fi
+  - build/tests/TestP3DS
+  - |
+    if [ $TRAVIS_OS_NAME == 'linux' ]; then
+      sonar-scanner -Dsonar.cfamily.build-wrapper-output=bw-output -Dsonar.cfamily.cache.enabled=true -Dsonar.cfamily.cache.path=${TRAVIS_HOME}/.cfamily -Dsonar.cfamily.threads=${NUMBER_OF_PROCESSORS}
+    fi
+
+
+# -----------------------------------------------------------------------------
+# Sonarcloud caches
+cache:
+  directories:
+    - $HOME/.sonar/cache
+    # This contains the CFamily cache. According to https://docs.travis-ci.com/user/caching/#pull-request-builds-and-caches,
+    # for a PR, it will use the cache of the target branch if the branch of the PR does not already have its cache.
+    - $HOME/.cfamily
