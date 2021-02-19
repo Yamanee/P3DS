@@ -20,7 +20,7 @@ public:
 
   ~Details() = default;
 
-  static void hello();
+  static void Hello();
 };
 
 } // namespace peds

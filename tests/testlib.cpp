@@ -5,7 +5,7 @@
 TEST(MathsVector, hello)
 {
   peds::Vector myVec;
-  myVec.hello();
+  myVec.Hello();
   EXPECT_EQ(1000, 1000);
 }
 

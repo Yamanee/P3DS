@@ -11,7 +11,7 @@
 
 namespace peds {
 
-void Details::hello()
+void Details::Hello()
 {
   std::cout << "Hello world :)" << std::endl;
 }
